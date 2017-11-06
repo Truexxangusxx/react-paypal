@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="theme-color" content="#000000">
+    <!--
+      manifest.json provides metadata used when your web app is added to the
+      homescreen on Android. See https://developers.google.com/web/fundamentals/engage-and-retain/web-app-manifest/
+    -->
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
+    <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
+    <!--
+      Notice the use of %PUBLIC_URL% in the tags above.
+      It will be replaced with the URL of the `public` folder during the build.
+      Only files inside the `public` folder can be referenced from the HTML.
+
+      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+      work correctly both with client-side routing and a non-root public URL.
+      Learn how to configure a non-root public URL by running `npm run build`.
+    -->
+    <title>React App</title>
+
+
+    <script type="text/javascript" src="assets/js/jquery.min.js"></script>
+    <script type="text/javascript" src="assets/js/slick.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="assets/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="assets/css/slick.css" />
+    <link rel="stylesheet" type="text/css" href="assets/css/slick-theme.css" />
+    <script src="https://www.paypalobjects.com/api/checkout.js"></script>
+
+
+  </head>
+  <body>
+
+      <style>
+          .persona img {
+              border-radius: 50%;
+              margin: 0 auto;
+          }
+  
+          a {
+              text-decoration: none;
+              color: inherit;
+          }
+  
+          a:hover {
+              text-decoration: none;
+              color: inherit;
+          }
+  
+          a:active {
+              text-decoration: none;
+              color: inherit;
+          }
+  
+          .persona {
+              text-align: center;
+              width: 300px;
+          }
+  
+          p.nombre {
+              font-size: 22px;
+              font-weight: bold;
+          }
+  
+          p.edad {
+              font-size: 20px;
+          }
+  
+          h1 {
+              text-align: center;
+              font-size: 50px;
+              color: #888;
+              font-weight: 100;
+          }
+  
+          .imagen_grande {
+              width: 280px;
+              height: 280px;
+          }
+  
+          .persona_content>div>div {
+              height: 450px;
+          }
+  
+          .persona {
+              display: flex !important;
+              justify-content: center;
+              flex-direction: column;
+          }
+  
+          .slick-prev {
+              left: 10px;
+              margin-top: -65px;
+              z-index: 10;
+          }
+  
+          .slick-prev::before {
+              font-family: 'FontAwesome';
+              content: '\f053';
+              font-size: 75px;
+              line-height: 1;
+              opacity: .75;
+              color: #888;
+          }
+  
+          .slick-next {
+              right: 40px;
+              margin-top: -65px;
+              z-index: 10;
+          }
+          .slick-next::before {
+              font-family: 'FontAwesome';
+              content: '\f054';
+              font-size: 75px;
+              line-height: 1;
+              opacity: .75;
+              color: #888;
+          }
+  
+  
+      </style>
+  
+  
+
+
+    <noscript>
+      You need to enable JavaScript to run this app.
+    </noscript>
+    <div id="root"></div>
+
+    <div id="app"></div>
+    <!--
+      This HTML file is a template.
+      If you open it directly in the browser, you will see an empty page.
+
+      You can add webfonts, meta tags, or analytics to this file.
+      The build step will place the bundled scripts into the <body> tag.
+
+      To begin the development, run `npm start` or `yarn start`.
+      To create a production bundle, use `npm run build` or `yarn build`.
+    -->
+
+
+    
+    <script>
+        $(document).ready(function () {
+            $('.persona_content').slick({
+                infinite: true,
+                dots: true,
+                centerMode: true,
+                centerPadding: '60px',
+                speed: 300,
+                slidesToShow: 3,
+                slidesToScroll: 3,
+            });
+
+            $('.persona_content').on('beforeChange', function (event, slick, currentSlide, nextSlide) {
+                $(".persona.slick-active").find("img").removeClass("imagen_grande");
+            });
+            $('.persona_content').on('afterChange', function (event, slick, currentSlide, nextSlide) {
+                $(".persona.slick-active").eq(1).find("img").addClass("imagen_grande");
+            });
+
+            $(".persona.slick-active").eq(1).find("img").addClass("imagen_grande");
+
+        })
+    </script>
+
+
+    
+<script>
+    paypal.Button.render({
+
+        env: 'sandbox', // sandbox | production
+
+        // PayPal Client IDs - replace with your own
+        // Create a PayPal app: https://developer.paypal.com/developer/applications/create
+        client: {
+            sandbox:    'AZDxjDScFpQtjWTOUtWKbyN_bDt4OgqaF4eYXlewfBP4-8aqX3PiV8e1GWU6liB2CUXlkA59kJXE7M6R',
+            production: 'AdSzXRVJnLVzKE2ayOu_J-tmNV3xEzUeTCOJb79L_dxal115ljZp9QNtBfupUtA3wqcRzJ6PHDQVMlPd'//client_id
+        },
+
+        // Show the buyer a 'Pay Now' button in the checkout flow
+        commit: true,
+
+        // payment() is called when the button is clicked
+        payment: function(data, actions) {
+
+            // Make a call to the REST api to create the payment
+            return actions.payment.create({
+                payment: {
+                    transactions: [
+                        {
+                            amount: { total: '25', currency: 'USD' }
+                        }
+                    ]
+                }
+            });
+        },
+
+        // onAuthorize() is called when the buyer approves the payment
+        onAuthorize: function(data, actions) {
+
+            // Make a call to the REST api to execute the payment
+            return actions.payment.execute().then(function() {
+                window.alert('Payment Complete!');
+            });
+        }
+
+    }, '#paypal-button-container');
+
+</script>
+
+
+
+  </body>
+</html>
